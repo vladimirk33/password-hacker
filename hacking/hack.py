@@ -1,25 +1,45 @@
 # write your code here
 import argparse
 import socket
+import string
+import itertools
 
+ASCII_LOWERCASE = string.ascii_lowercase
+DIGITS = string.digits
+ALPHABET = ASCII_LOWERCASE + DIGITS
 
 parser = argparse.ArgumentParser()
 parser.add_argument("hostname", help="IP address")
 parser.add_argument("port", help="port", type=int)
-parser.add_argument("message", help="message for sending")
 args = parser.parse_args()
+
+
+def brute_force():
+    attempt = 0
+    for i in range(1, 1024):
+        for comb in itertools.product(ALPHABET, repeat=i):
+            password = ""
+            for symbol in comb:
+                password += symbol
+            attempt += 1
+            yield password, attempt
 
 
 def main():
     hostname = args.hostname
     port = args.port
-    message = args.message
     with socket.socket() as client_socket:
         client_socket.connect((hostname, port))
-        data = message.encode()
-        client_socket.send(data)
         buffer_size = 1024
-        response = client_socket.recv(buffer_size).decode()
+        for password, attempt in brute_force():
+            if attempt == 1_000_000:
+                break
+            data = password.encode()
+            client_socket.send(data)
+            response = client_socket.recv(buffer_size).decode()
+            if response == "Connection success!":
+                response = password
+                break
         print(response)
 
 
