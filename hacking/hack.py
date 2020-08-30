@@ -3,6 +3,7 @@ import socket
 import string
 import itertools
 import json
+from datetime import datetime
 
 ASCII_LOWERCASE = string.ascii_lowercase
 ASCII_UPPERCASE = string.ascii_uppercase
@@ -72,9 +73,12 @@ def main():
             test_password = password[:] + letter
             data = {"login": login, "password": test_password}
             data = json.dumps(data)
+            start = datetime.now()
             client_socket.send(data.encode())
             response = json.loads(client_socket.recv(buffer_size).decode())
-            if response["result"] == "Exception happened during login":
+            finish = datetime.now()
+            difference = finish - start
+            if difference.microseconds >= 90000:
                 password += letter
             if response["result"] == "Connection success!":
                 break
