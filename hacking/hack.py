@@ -25,15 +25,25 @@ def brute_force():
             yield password, attempt
 
 
+def brute_force_from_file():
+    with open(r"C:\Users\samch\PycharmProjects\Password Hacker\Password Hacker\task\hacking\passwords.txt",
+              "r", encoding="utf8") as fout:
+        for password in fout:
+            password = password.strip()
+            passwords = map(lambda x: ''.join(x),
+                            itertools.product(*([letter.lower(), letter.upper()]
+                                              for letter in password)))
+            for password in passwords:
+                yield password
+
+
 def main():
     hostname = args.hostname
     port = args.port
     with socket.socket() as client_socket:
         client_socket.connect((hostname, port))
         buffer_size = 1024
-        for password, attempt in brute_force():
-            if attempt == 1_000_000:
-                break
+        for password in brute_force_from_file():
             data = password.encode()
             client_socket.send(data)
             response = client_socket.recv(buffer_size).decode()
