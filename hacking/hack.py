@@ -26,7 +26,7 @@ def brute_force():
 
 
 def brute_force_from_file():
-    with open(r"C:\Users\samch\PycharmProjects\Password Hacker\Password Hacker\task\hacking\passwords.txt",
+    with open(r"passwords.txt",
               "r", encoding="utf8") as fout:
         for password in fout:
             password = password.strip()
